@@ -6,3 +6,43 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  BUSINESS
+  REVIEWER
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  AI_REVIEWED
+  AI_REVIEW_FAILED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  role         Role          @default(BUSINESS)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id                 String            @id @default(uuid())
+  businessName       String
+  registrationNumber String
+  registrationExpiry DateTime
+  ownerName          String
+  contactEmail       String
+  documentUrl        String
+  status             ApplicationStatus @default(DRAFT)
+  aiReviewSummary    Json?
+  userId             String?
+  user               User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
