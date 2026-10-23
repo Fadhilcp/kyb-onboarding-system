@@ -6,7 +6,7 @@ export interface CreateApplicationDTO {
     registrationExpiry: Date;
     ownerName: string;
     contactEmail: string;
-    documentUrl: string;
+    documentUrl?: string;
 }
 
 export interface UpdateApplicationStatusDTO {

@@ -1,26 +1,19 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
+import applicationRouter from './routes/application.route';
 
 const app: Application = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  methods: process.env.CORS_METHODS?.split(','),
+  allowedHeaders: process.env.CORS_ALLOWED_HEADERS?.split(','),
+  credentials: process.env.CORS_CREDENTIALS === 'true',
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'KYB Onboarding Backend API is healthy and operational',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/api/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'KYB Onboarding Backend API is healthy and operational',
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use('/api/applications', applicationRouter);
 
 export default app;

@@ -1,0 +1,64 @@
+import axios from 'axios';
+import { tokenStore } from '../utils/tokenStore';
+
+export const API_BASE_URL: string =
+  import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const instance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});
+
+instance.interceptors.request.use((config) => {
+    const token = tokenStore.get();
+    if(token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    // when detect formData, change the content type into multipart
+    const isFormData = config.data instanceof FormData;
+    if (isFormData) {
+        delete config.headers["Content-Type"];
+    } else {
+        config.headers["Content-Type"] = "application/json";
+    }
+
+    return config
+});
+
+instance.interceptors.response.use((response) => response,
+   async (error) => {
+    const originalRequest = error.config;
+
+    if(
+        error.response?.status === 401 && 
+        error.response.data?.code === "TOKEN_EXPIRED" && 
+        !originalRequest._retry
+    ) {
+        //to prevent infinte loop of request
+        originalRequest._retry = true
+
+        try {
+            // const refreshReponse = await authService.refreshToken();
+            const refreshReponse = await instance.post('/auth/refresh');
+            const { token } = refreshReponse.data;
+
+            tokenStore.set(token);
+            
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            
+            return instance(originalRequest);
+        } catch (error) {
+            tokenStore.clear();
+            console.error('Session expired. Please log in again.');
+            return Promise.reject(error)
+        }
+    }
+    return Promise.reject(error)
+   }
+);
+
+
+export default instance;
