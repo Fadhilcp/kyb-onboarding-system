@@ -2,21 +2,13 @@ import { Request, Response } from 'express';
 import { IAuthService } from '../services/interfaces/IAuthService';
 import { z, ZodType } from 'zod';
 import { LoginDTO } from '../dtos/auth.dto';
+import { setRefreshTokenCookie, clearRefreshTokenCookie } from '../utils/cookieUtils';
 
 export class AuthController {
   constructor(
     private readonly _authService: IAuthService,
     private readonly _loginSchema: ZodType<LoginDTO>
   ) {}
-
-  private setRefreshTokenCookie(res: Response, refreshToken: string): void {
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-  }
 
   async login(req: Request, res: Response): Promise<void> {
     try {
@@ -33,7 +25,7 @@ export class AuthController {
 
       const authResponse = await this._authService.login(parseResult.data);
 
-      this.setRefreshTokenCookie(res, authResponse.refreshToken);
+      setRefreshTokenCookie(res, authResponse.refreshToken);
 
       res.status(200).json({
         success: true,
@@ -69,7 +61,7 @@ export class AuthController {
       const refreshResponse = await this._authService.refreshToken(incomingRefreshToken);
 
       if (refreshResponse.refreshToken) {
-        this.setRefreshTokenCookie(res, refreshResponse.refreshToken);
+        setRefreshTokenCookie(res, refreshResponse.refreshToken);
       }
 
       res.status(200).json({
@@ -93,11 +85,7 @@ export class AuthController {
   };
 
   async logout (_req: Request, res: Response): Promise<void> {
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    });
+    clearRefreshTokenCookie(res);
 
     res.status(200).json({
       success: true,
