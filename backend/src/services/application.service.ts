@@ -4,9 +4,13 @@ import { IApplicationService } from './interfaces/IApplicationService';
 import { CreateApplicationDTO } from '../dtos/application.dto';
 import cloudinary from '../config/cloudinary';
 import fs from 'fs';
+import { IAIService } from './interfaces/IAIService';
 
 export class ApplicationService implements IApplicationService {
-  constructor(private readonly _applicationRepository: IApplicationRepository) {}
+  constructor(
+    private readonly _applicationRepository: IApplicationRepository,
+    private readonly _aiService: IAIService
+  ) {}
 
   async submitApplication(
     applicationDto: CreateApplicationDTO,
@@ -44,7 +48,40 @@ export class ApplicationService implements IApplicationService {
       status: ApplicationStatus.SUBMITTED,
     });
 
-    return createdApplication;
+    try {
+      const aiAnalysisResult = await this._aiService.analyzeApplication(
+        applicationDto,
+        documentUrl
+      );
+
+      if (aiAnalysisResult.error) {
+        throw new Error(aiAnalysisResult.error);
+      }
+
+      const updatedApplication = await this._applicationRepository.updateStatus(
+        createdApplication.id,
+        ApplicationStatus.AI_REVIEWED,
+        aiAnalysisResult
+      );
+
+      return updatedApplication ?? createdApplication;
+    } catch (err: any) {
+      console.error(
+        `AI verification failed for application ${createdApplication.id}:`,
+        err
+      );
+
+      const failedApplication = await this._applicationRepository.updateStatus(
+        createdApplication.id,
+        ApplicationStatus.AI_REVIEW_FAILED,
+        {
+          error: err?.message || 'AI verification failed',
+          reviewedAt: new Date().toISOString(),
+        }
+      );
+
+      return failedApplication ?? createdApplication;
+    }
   }
 
   async getApplications(status?: ApplicationStatus): Promise<Application[]> {

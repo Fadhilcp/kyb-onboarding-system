@@ -8,11 +8,14 @@ import { prisma } from '../config/prisma';
 import { createApplicationSchema } from '../utils/validation';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { checkRoleMiddleware } from '../middlewares/checkRole.middleware';
+import { AIService } from '../services/ai.service';
+import { geminiClient } from '../config/genAi';
 
 const applicationRouter = Router();
 
 const applicationRepository = new ApplicationRepository(prisma);
-const applicationService = new ApplicationService(applicationRepository);
+const aiService = new AIService(geminiClient);
+const applicationService = new ApplicationService(applicationRepository, aiService);
 const applicationController = new ApplicationController(
   applicationService,
   createApplicationSchema
