@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth.service';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../features/authSlice';
+import { isValidEmail } from '../utils/validation';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,11 @@ export const AdminLoginPage: React.FC = () => {
 
     if (!email.trim() || !password) {
       setErrorMsg('Please enter both email and password.');
+      return;
+    }
+
+    if (!isValidEmail(email.trim())) {
+      setErrorMsg('Please enter a valid email address.');
       return;
     }
 
