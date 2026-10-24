@@ -4,6 +4,7 @@ import { ApplicationStatus } from '@prisma/client';
 import { IApplicationService } from '../services/interfaces/IApplicationService';
 import { CreateApplicationDTO } from '../dtos/application.dto';
 import { CreateApplicationInput } from '../utils/validation';
+import { toApplicationTableDTOs } from '../mappers/application.mapper';
 
 export class ApplicationController {
   constructor(
@@ -54,6 +55,7 @@ export class ApplicationController {
         data: application,
       });
     } catch (error) {
+      console.error(error)
       next(error);
     }
   };
@@ -84,7 +86,7 @@ export class ApplicationController {
       res.status(200).json({
         success: true,
         count: applications.length,
-        data: applications,
+        data: toApplicationTableDTOs(applications),
       });
     } catch (error) {
       next(error);
@@ -97,7 +99,7 @@ export class ApplicationController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.applicationId;
       if (!id) {
         res.status(400).json({
           success: false,
@@ -130,7 +132,7 @@ export class ApplicationController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.applicationId || req.params.id;
       const { status } = req.body;
 
       if (!id) {

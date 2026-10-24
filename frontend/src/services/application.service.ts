@@ -10,12 +10,12 @@ class ApplicationService{
         return await instance.get(`/applications?status=${status ?? ""}`);
     }
 
-    async getApplicationById(id: string) {
-        return await instance.get(`/applications/${id}`);
+    async getApplicationById(applicationId: string) {
+        return await instance.get(`/applications/${applicationId}`);
     }
 
-    async updateDecision(id: string, status: ApplicationStatus) {
-        return await instance.patch(`/applications/${id}/decision`, { status });
+    async updateDecision(applicationId: string, status: ApplicationStatus) {
+        return await instance.patch(`/applications/${applicationId}/decision`, { status });
     }
 }
 

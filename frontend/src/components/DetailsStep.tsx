@@ -25,8 +25,11 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
     data.contactEmail;
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Business Details</h2>
+    <div className="max-w-xl mx-auto p-6 sm:p-8 bg-white rounded-2xl shadow-sm border border-gray-200 space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Business Details</h2>
+        <p className="mt-1 text-sm text-gray-500">Provide legal entity information for KYB verification.</p>
+      </div>
       <div className="grid gap-4">
         <input
           type="text"
@@ -34,7 +37,7 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
           placeholder="Business Name"
           value={data.businessName}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
           required
         />
         <input
@@ -43,7 +46,7 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
           placeholder="Registration Number"
           value={data.registrationNumber}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm font-mono"
           required
         />
         <input
@@ -52,7 +55,7 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
           placeholder="Registration Expiry"
           value={data.registrationExpiry}
           onChange={handleDateChange}
-          className="border rounded px-3 py-2 w-full"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
           required
         />
         <input
@@ -61,7 +64,7 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
           placeholder="Owner Name"
           value={data.ownerName}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
           required
         />
         <input
@@ -70,16 +73,16 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({ data, setData, onNext 
           placeholder="Contact Email"
           value={data.contactEmail}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
           required
         />
       </div>
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end pt-2">
         <button
           type="button"
           onClick={onNext}
           disabled={!isValid}
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>

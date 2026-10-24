@@ -35,14 +35,14 @@ applicationRouter.get(
 );
 
 applicationRouter.get(
-  '/:id',
+  '/:applicationId',
   authMiddleware,
   checkRoleMiddleware(Role.REVIEWER),
   applicationController.getApplicationById
 );
 
 applicationRouter.patch(
-  '/:id/decision',
+  '/:applicationId/decision',
   authMiddleware,
   checkRoleMiddleware(Role.REVIEWER),
   applicationController.updateDecision

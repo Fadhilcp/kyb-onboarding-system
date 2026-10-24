@@ -34,13 +34,20 @@ export const SubmitApplicationPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 sm:p-8">
       {status === 'success' ? (
-        <div className="bg-white p-8 rounded shadow-md text-center">
-          <h2 className="text-2xl font-semibold mb-4">Application Submitted!</h2>
-          <p className="mb-6">Your KYB application has been received.</p>
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 text-center shadow-sm space-y-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Application Submitted!</h2>
+            <p className="text-sm text-gray-600">Your KYB application has been received and is currently under review.</p>
+          </div>
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             onClick={() => {
               setStep(1);
               setFormData({
@@ -54,7 +61,7 @@ export const SubmitApplicationPage: React.FC = () => {
               setStatus('idle');
             }}
           >
-            Submit Another
+            Submit Another Application
           </button>
         </div>
       ) : (
@@ -75,7 +82,9 @@ export const SubmitApplicationPage: React.FC = () => {
             />
           )}
           {status === 'error' && (
-            <div className="mt-4 text-center text-red-600">{errorMsg}</div>
+            <div className="mt-6 max-w-xl w-full rounded-xl border border-rose-200 bg-rose-50 p-4 text-center text-sm font-medium text-rose-700 shadow-sm">
+              {errorMsg}
+            </div>
           )}
         </>
       )}
