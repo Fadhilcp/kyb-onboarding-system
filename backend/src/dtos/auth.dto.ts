@@ -1,15 +1,27 @@
-import { Role } from "@prisma/client";
+import { Role } from '@prisma/client';
 
-export interface LoginRequestDTO {
-    email: string;
-    password: string;
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+export interface AuthTokensDTO {
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface AuthResponseDTO {
-    token: string;
-    user: {
-        id: string;
-        email: string;
-        role: Role;
-    }
+  id: string;
+  email: string;
+  role: Role;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponseDTO {
+  id: string;
+  email: string;
+  role: Role;
+  accessToken: string;
+  refreshToken?: string;
 }

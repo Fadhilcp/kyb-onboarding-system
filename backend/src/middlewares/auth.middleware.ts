@@ -28,16 +28,28 @@ export const authMiddleware = (
   }
 
   const token = authHeader.split(' ')[1];
-  const jwtSecret = process.env.JWT_SECRET || 'supersecret_jwt_key_change_in_production';
+  const jwtSecret =
+    process.env.JWT_ACCESS_SECRET ||
+    process.env.JWT_SECRET ||
+    'supersecret_jwt_key_change_in_production';
 
   try {
     const decoded = jwt.verify(token, jwtSecret) as TokenPayload;
     req.user = decoded;
     next();
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      res.status(401).json({
+        success: false,
+        code: 'TOKEN_EXPIRED',
+        error: 'Unauthorized: Token expired.',
+      });
+      return;
+    }
+
     res.status(401).json({
       success: false,
-      error: 'Unauthorized: Invalid or expired token.',
+      error: 'Unauthorized: Invalid token.',
     });
     return;
   }

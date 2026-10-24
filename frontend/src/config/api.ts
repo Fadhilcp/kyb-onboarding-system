@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { tokenStore } from '../utils/tokenStore';
+import { authService } from '../services/auth.service';
 
-export const API_BASE_URL: string =
-  import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL: string = import.meta.env.VITE_API_URL;
 
 const instance = axios.create({
   baseURL: API_BASE_URL,
@@ -41,13 +41,14 @@ instance.interceptors.response.use((response) => response,
         originalRequest._retry = true
 
         try {
-            // const refreshReponse = await authService.refreshToken();
-            const refreshReponse = await instance.post('/auth/refresh');
-            const { token } = refreshReponse.data;
+            const refreshReponse = await authService.refreshToken();
+            const { accessToken } = refreshReponse.data;
 
-            tokenStore.set(token);
+            if (accessToken) {
+              tokenStore.set(accessToken);
+            }
             
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             
             return instance(originalRequest);
         } catch (error) {
