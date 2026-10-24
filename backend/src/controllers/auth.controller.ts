@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { IAuthService } from '../services/interfaces/IAuthService';
-import { z, ZodType } from 'zod';
+import { ZodType } from 'zod';
 import { LoginDTO } from '../dtos/auth.dto';
 import { setRefreshTokenCookie, clearRefreshTokenCookie } from '../utils/cookieUtils';
+import { sendResponse } from '../utils/response';
+import { AppError } from '../utils/appError';
 
 export class AuthController {
   constructor(
@@ -10,16 +12,12 @@ export class AuthController {
     private readonly _loginSchema: ZodType<LoginDTO>
   ) {}
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const parseResult = this._loginSchema.safeParse(req.body);
-      
+
       if (!parseResult.success) {
-        const errors = parseResult.error.issues.map((err) => ({
-          field: err.path.join('.'),
-          message: err.message,
-        }));
-        res.status(400).json({ success: false, error: 'Validation failed', details: errors });
+        next(parseResult.error);
         return;
       }
 
@@ -27,35 +25,26 @@ export class AuthController {
 
       setRefreshTokenCookie(res, authResponse.refreshToken);
 
-      res.status(200).json({
-        success: true,
+      sendResponse(res, 200, {
         message: 'Login successful',
         data: {
           id: authResponse.id,
           email: authResponse.email,
           role: authResponse.role,
         },
-        accessToken: authResponse.accessToken
+        accessToken: authResponse.accessToken,
       });
     } catch (err: any) {
-      const status = err.status || 500;
-      res.status(status).json({
-        success: false,
-        error: err.message || 'An error occurred during login.',
-      });
+      next(err);
     }
   };
 
-  async refreshToken(req: Request, res: Response): Promise<void> {
+  async refreshToken (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
       if (!incomingRefreshToken) {
-        res.status(401).json({
-          success: false,
-          error: 'Unauthorized: No refresh token provided.',
-        });
-        return;
+        throw new AppError('Unauthorized: No refresh token provided.', 401, 'NO_REFRESH_TOKEN');
       }
 
       const refreshResponse = await this._authService.refreshToken(incomingRefreshToken);
@@ -64,32 +53,29 @@ export class AuthController {
         setRefreshTokenCookie(res, refreshResponse.refreshToken);
       }
 
-      res.status(200).json({
-        success: true,
+      sendResponse(res, 200, {
         message: 'Token refreshed successfully',
         data: {
           id: refreshResponse.id,
           email: refreshResponse.email,
           role: refreshResponse.role,
-          accessToken: refreshResponse.accessToken
-        }
+          accessToken: refreshResponse.accessToken,
+        },
       });
     } catch (err: any) {
-      const status = err.status || 401;
-      res.status(status).json({
-        success: false,
-        code: err.code || 'TOKEN_REFRESH_FAILED',
-        error: err.message || 'Failed to refresh token.',
-      });
+      next(err);
     }
   };
 
-  async logout (_req: Request, res: Response): Promise<void> {
-    clearRefreshTokenCookie(res);
+  async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      clearRefreshTokenCookie(res);
 
-    res.status(200).json({
-      success: true,
-      message: 'Logged out successfully.',
-    });
+      sendResponse(res, 200, {
+        message: 'Logged out successfully.',
+      });
+    } catch (err: any) {
+      next(err);
+    }
   };
 }

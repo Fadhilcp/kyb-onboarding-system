@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import applicationRouter from './routes/application.route';
 import authRouter from './routes/auth.route';
+import { errorHandler } from './middlewares/error.middleware';
 
 const app: Application = express();
 
@@ -19,5 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationRouter);
+
+app.use(errorHandler);
 
 export default app;

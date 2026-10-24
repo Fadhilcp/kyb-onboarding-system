@@ -5,6 +5,8 @@ import { IApplicationService } from '../services/interfaces/IApplicationService'
 import { CreateApplicationDTO } from '../dtos/application.dto';
 import { CreateApplicationInput } from '../utils/validation';
 import { toApplicationTableDTOs } from '../mappers/application.mapper';
+import { sendResponse } from '../utils/response';
+import { AppError } from '../utils/appError';
 
 export class ApplicationController {
   constructor(
@@ -12,25 +14,15 @@ export class ApplicationController {
     private readonly _validationSchema: z.ZodType<CreateApplicationInput>
   ) {}
 
-    submitApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async submitApplication (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       if (!req.file) {
-        res.status(400).json({
-          success: false,
-          error: 'Document file is required (PDF, JPEG, PNG, or WebP).',
-        });
-        return;
+        throw new AppError('Document file is required (PDF, JPEG, PNG, or WebP).', 400);
       }
 
       const parseResult = this._validationSchema.safeParse(req.body);
       if (!parseResult.success) {
-        const issues = parseResult.error.issues || [];
-        const errors = issues.map((issue) => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-        }));
-
-        res.status(400).json({ success: false, error: 'Validation failed', details: errors });
+        next(parseResult.error);
         return;
       }
 
@@ -49,22 +41,16 @@ export class ApplicationController {
         req.file.path
       );
 
-      res.status(201).json({
-        success: true,
+      sendResponse(res, 201, {
         message: 'Application submitted successfully',
         data: application,
       });
     } catch (error) {
-      console.error(error)
       next(error);
     }
   };
 
-  getApplications = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  async getApplications (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const statusQuery = req.query.status as string | undefined;
 
@@ -72,19 +58,17 @@ export class ApplicationController {
       if (statusQuery) {
         const validStatuses = Object.values(ApplicationStatus);
         if (!validStatuses.includes(statusQuery as ApplicationStatus)) {
-          res.status(400).json({
-            success: false,
-            error: `Invalid status filter '${statusQuery}'. Valid statuses: ${validStatuses.join(', ')}`,
-          });
-          return;
+          throw new AppError(
+            `Invalid status filter '${statusQuery}'. Valid statuses: ${validStatuses.join(', ')}`,
+            400
+          );
         }
         filterStatus = statusQuery as ApplicationStatus;
       }
 
       const applications = await this._applicationService.getApplications(filterStatus);
 
-      res.status(200).json({
-        success: true,
+      sendResponse(res, 200, {
         count: applications.length,
         data: toApplicationTableDTOs(applications),
       });
@@ -93,32 +77,19 @@ export class ApplicationController {
     }
   };
 
-  getApplicationById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  async getApplicationById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.applicationId;
       if (!id) {
-        res.status(400).json({
-          success: false,
-          error: 'Application ID is required.',
-        });
-        return;
+        throw new AppError('Application ID is required.', 400);
       }
 
       const application = await this._applicationService.getApplicationById(id.toString());
       if (!application) {
-        res.status(404).json({
-          success: false,
-          error: `Application with ID '${id}' not found.`,
-        });
-        return;
+        throw new AppError(`Application with ID '${id}' not found.`, 404);
       }
 
-      res.status(200).json({
-        success: true,
+      sendResponse(res, 200, {
         data: application,
       });
     } catch (error) {
@@ -126,40 +97,24 @@ export class ApplicationController {
     }
   };
 
-  updateDecision = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  async updateDecision(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.applicationId || req.params.id;
       const { status } = req.body;
 
       if (!id) {
-        res.status(400).json({
-          success: false,
-          error: 'Application ID is required.',
-        });
-        return;
+        throw new AppError('Application ID is required.', 400);
       }
 
       if (!status) {
-        res.status(400).json({
-          success: false,
-          error: "Decision 'status' is required in request body.",
-        });
-        return;
+        throw new AppError("Decision 'status' is required in request body.", 400);
       }
 
       if (
         status !== ApplicationStatus.APPROVED &&
         status !== ApplicationStatus.REJECTED
       ) {
-        res.status(400).json({
-          success: false,
-          error: "Decision status must be either 'APPROVED' or 'REJECTED'.",
-        });
-        return;
+        throw new AppError("Decision status must be either 'APPROVED' or 'REJECTED'.", 400);
       }
 
       const updatedApplication = await this._applicationService.updateDecision(
@@ -167,17 +122,12 @@ export class ApplicationController {
         status as ApplicationStatus
       );
 
-      res.status(200).json({
-        success: true,
+      sendResponse(res, 200, {
         message: `Application has been ${status.toLowerCase()} successfully.`,
         data: updatedApplication,
       });
     } catch (error: any) {
-      const statusCode = error.status || 500;
-      res.status(statusCode).json({
-        success: false,
-        error: error.message || 'Failed to update application decision.',
-      });
+      next(error);
     }
   };
 }

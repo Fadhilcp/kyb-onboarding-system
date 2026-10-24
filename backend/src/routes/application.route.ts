@@ -24,28 +24,28 @@ const applicationController = new ApplicationController(
 applicationRouter.post(
   '/',
   uploadDocument.single('document'),
-  applicationController.submitApplication
+  applicationController.submitApplication.bind(applicationController)
 );
 
 applicationRouter.get(
   '/',
   authMiddleware,
   checkRoleMiddleware(Role.REVIEWER),
-  applicationController.getApplications
+  applicationController.getApplications.bind(applicationController)
 );
 
 applicationRouter.get(
   '/:applicationId',
   authMiddleware,
   checkRoleMiddleware(Role.REVIEWER),
-  applicationController.getApplicationById
+  applicationController.getApplicationById.bind(applicationController)
 );
 
 applicationRouter.patch(
   '/:applicationId/decision',
   authMiddleware,
   checkRoleMiddleware(Role.REVIEWER),
-  applicationController.updateDecision
+  applicationController.updateDecision.bind(applicationController)
 );
 
 export default applicationRouter;
