@@ -59,7 +59,19 @@ export interface ApiResponse<T = any> {
 export interface ApplicationFormData {
   businessName: string;
   registrationNumber: string;
-  registrationExpiry: string; // ISO date string
+  registrationExpiry: string;
   ownerName: string;
   contactEmail: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: Role;
+  accessToken: string;
 }

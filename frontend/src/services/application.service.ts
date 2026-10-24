@@ -2,20 +2,20 @@ import instance from "../config/api";
 import { type ApplicationStatus } from "../lib/types";
 
 class ApplicationService{
-    submit(formData: FormData){
-        return instance.post('/applications', formData)
+    async submit(formData: FormData){
+        return await instance.post('/applications', formData)
     }
 
-    getApplications(status?: ApplicationStatus) {
-        return instance.get(`/applications?status=${status ?? ""}`);
+    async getApplications(status?: ApplicationStatus) {
+        return await instance.get(`/applications?status=${status ?? ""}`);
     }
 
-    getApplicationById(id: string) {
-        return instance.get(`/applications/${id}`);
+    async getApplicationById(id: string) {
+        return await instance.get(`/applications/${id}`);
     }
 
-    updateDecision(id: string, status: ApplicationStatus) {
-        return instance.patch(`/applications/${id}/decision`, { status });
+    async updateDecision(id: string, status: ApplicationStatus) {
+        return await instance.patch(`/applications/${id}/decision`, { status });
     }
 }
 
