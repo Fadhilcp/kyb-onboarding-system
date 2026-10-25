@@ -67,6 +67,31 @@ export class AuthController {
     }
   };
 
+  async verifySession(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const refreshToken = req.cookies?.refreshToken;
+
+      if (!refreshToken) {
+        clearRefreshTokenCookie(res);
+        throw new AppError('No refresh token found. Please log in.', 401, 'UNAUTHORIZED');
+      }
+      const sessionData = await this._authService.verifySession(refreshToken);
+
+      sendResponse(res, 200, {
+        message: 'Session verified successfully.',
+        data: {
+          id: sessionData.id,
+          email: sessionData.email,
+          role: sessionData.role,
+        },
+        accessToken: sessionData.accessToken,
+      });
+    } catch (err: any) {
+      clearRefreshTokenCookie(res);
+      next(new AppError('Invalid or expired refresh token.', 403, 'FORBIDDEN'));
+    }
+  }
+
   async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       clearRefreshTokenCookie(res);

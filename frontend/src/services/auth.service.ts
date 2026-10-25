@@ -32,6 +32,17 @@ class AuthService {
 
     return response.data;
   }
+
+  async verifySession() {
+    const response = await instance.get('/auth/me'); 
+    const accessToken = response.data.accessToken;
+
+    if (accessToken) {
+      tokenStore.set(accessToken);
+    }
+
+    return response.data;
+  }
 }
 
 export const authService = new AuthService();

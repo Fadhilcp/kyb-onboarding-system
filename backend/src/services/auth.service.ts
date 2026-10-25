@@ -65,4 +65,27 @@ export class AuthService implements IAuthService {
       refreshToken: newRefreshToken,
     };
   }
+
+  async verifySession(refreshToken: string) {
+    try {
+      const decoded = this._tokenService.verifyRefreshToken(refreshToken);
+
+      const user = await this._userRepository.findById(decoded.id); 
+      
+      if (!user) {
+        throw new Error('User no longer exists.');
+      }
+      
+      const newAccessToken = this._tokenService.generateAccessToken(user);
+
+      return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        accessToken: newAccessToken,
+      };
+    } catch (error) {
+      throw new Error('Session verification failed.'); 
+    }
+  }
 }
