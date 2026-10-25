@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
-import { BaseRepository } from "./base.repository";
-import { IUserRepository } from "./interfaces/IUserRepository";
+import { BaseRepository } from "./base.repository.js";
+import { IUserRepository } from "./interfaces/IUserRepository.js";
 
 export class UserRepository extends BaseRepository<User, Prisma.UserCreateInput> implements IUserRepository {
     constructor(prisma: PrismaClient) {

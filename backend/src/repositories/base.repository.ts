@@ -1,4 +1,4 @@
-import { IBaseRepository } from "./interfaces/IBaseRepository";
+import { IBaseRepository } from "./interfaces/IBaseRepository.js";
 
 export class BaseRepository<T, CreateDTO> implements IBaseRepository<T, CreateDTO> {
 

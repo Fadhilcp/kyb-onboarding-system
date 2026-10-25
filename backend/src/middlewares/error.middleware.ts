@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
-import { sendResponse } from '../utils/response';
-import { AppError } from '../utils/appError';
+import { sendResponse } from '../utils/response.js';
 
 export const errorHandler: ErrorRequestHandler = (
   err: any,

@@ -1,6 +1,6 @@
 import { Application, ApplicationStatus, Prisma, PrismaClient } from "@prisma/client";
-import { BaseRepository } from "./base.repository";
-import { IApplicationRepository } from "./interfaces/IApplicationRepository";
+import { BaseRepository } from "./base.repository.js";
+import { IApplicationRepository } from "./interfaces/IApplicationRepository.js";
 
 export class ApplicationRepository extends BaseRepository<Application, Prisma.ApplicationCreateInput> implements IApplicationRepository {
     constructor(prisma: PrismaClient) {

@@ -1,5 +1,5 @@
 import { Application, ApplicationStatus } from '@prisma/client';
-import { CreateApplicationDTO } from '../../dtos/application.dto';
+import { CreateApplicationDTO } from '../../dtos/application.dto.js';
 
 export interface IApplicationService {
   submitApplication(applicationDto: CreateApplicationDTO, filePath: string): Promise<Application>;

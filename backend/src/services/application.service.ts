@@ -1,10 +1,10 @@
 import { Application, ApplicationStatus } from '@prisma/client';
-import { IApplicationRepository } from '../repositories/interfaces/IApplicationRepository';
-import { IApplicationService } from './interfaces/IApplicationService';
-import { CreateApplicationDTO } from '../dtos/application.dto';
-import cloudinary from '../config/cloudinary';
+import { IApplicationRepository } from '../repositories/interfaces/IApplicationRepository.js';
+import { IApplicationService } from './interfaces/IApplicationService.js';
+import { CreateApplicationDTO } from '../dtos/application.dto.js';
+import cloudinary from '../config/cloudinary.js';
 import fs from 'fs';
-import { IAIService } from './interfaces/IAIService';
+import { IAIService } from './interfaces/IAIService.js';
 
 export class ApplicationService implements IApplicationService {
   constructor(

@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { prisma } from '../config/prisma';
-import { UserRepository } from '../repositories/user.repository';
-import { AuthService } from '../services/auth.service';
-import { AuthController } from '../controllers/auth.controller';
-import { loginSchema } from '../utils/validation';
-import { TokenService } from '../services/token.service';
+import { prisma } from '../config/prisma.js';
+import { UserRepository } from '../repositories/user.repository.js';
+import { AuthService } from '../services/auth.service.js';
+import { AuthController } from '../controllers/auth.controller.js';
+import { loginSchema } from '../utils/validation.js';
+import { TokenService } from '../services/token.service.js';
 
 const authRouter = Router();
 

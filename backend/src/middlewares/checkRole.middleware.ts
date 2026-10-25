@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { AuthenticatedRequest } from "./auth.middleware";
+import { AuthenticatedRequest } from "./auth.middleware.js";
 import { Role } from "@prisma/client";
 
 export const checkRoleMiddleware = (requiredRole: Role) => {

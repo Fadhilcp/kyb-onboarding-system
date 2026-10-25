@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import { IUserRepository } from '../repositories/interfaces/IUserRepository';
-import { IAuthService } from './interfaces/IAuthService';
-import { LoginDTO, AuthResponseDTO, RefreshTokenResponseDTO } from '../dtos/auth.dto';
+import { IUserRepository } from '../repositories/interfaces/IUserRepository.js';
+import { IAuthService } from './interfaces/IAuthService.js';
+import { LoginDTO, AuthResponseDTO, RefreshTokenResponseDTO } from '../dtos/auth.dto.js';
 import { Role } from '@prisma/client';
-import { ITokenService } from './interfaces/ITokenService';
+import { ITokenService } from './interfaces/ITokenService.js';
 
 export class AuthService implements IAuthService {
   constructor(

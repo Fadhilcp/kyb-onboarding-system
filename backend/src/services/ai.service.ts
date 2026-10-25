@@ -1,8 +1,8 @@
-import { GoogleGenAI } from '@google/genai';
-import { CreateApplicationDTO } from '../dtos/application.dto';
-import { IAIService } from './interfaces/IAIService';
-import { buildKybReviewPrompt, cleanAndParseAiJson, resolveDocumentMimeType } from '../utils/aiUtils';
-import { AiReviewAnalysisResult } from '../dtos/ai.dto';
+import type { GoogleGenAI } from '@google/genai';
+import { CreateApplicationDTO } from '../dtos/application.dto.js';
+import { IAIService } from './interfaces/IAIService.js';
+import { buildKybReviewPrompt, cleanAndParseAiJson, resolveDocumentMimeType } from '../utils/aiUtils.js';
+import { AiReviewAnalysisResult } from '../dtos/ai.dto.js';
 
 export class AIService implements IAIService {
   private ai: GoogleGenAI;

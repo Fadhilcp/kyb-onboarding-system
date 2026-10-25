@@ -1,4 +1,4 @@
-import { LoginDTO, AuthResponseDTO, RefreshTokenResponseDTO } from '../../dtos/auth.dto';
+import { LoginDTO, AuthResponseDTO, RefreshTokenResponseDTO } from '../../dtos/auth.dto.js';
 
 export interface IAuthService {
   login(credentials: LoginDTO): Promise<AuthResponseDTO>;

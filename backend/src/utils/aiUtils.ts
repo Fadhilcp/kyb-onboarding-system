@@ -1,4 +1,4 @@
-import { CreateApplicationDTO } from '../dtos/application.dto';
+import { CreateApplicationDTO } from '../dtos/application.dto.js';
 
 export const buildKybReviewPrompt = (data: CreateApplicationDTO): string => {
     const expiryString = data.registrationExpiry
@@ -8,7 +8,7 @@ export const buildKybReviewPrompt = (data: CreateApplicationDTO): string => {
     return `You are a strict, automated KYB (Know Your Business) verification and compliance analyst.
         Analyze the provided business registration/incorporation document against the applicant's submitted business information.
 
-        Applicant Data:
+        Applicant Data: 
         - Business Name: "${data.businessName}"
         - Registration Number: "${data.registrationNumber}"
         - Registration Expiry: "${expiryString}"

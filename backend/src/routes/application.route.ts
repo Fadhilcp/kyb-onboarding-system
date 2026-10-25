@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { Role } from '@prisma/client';
-import { ApplicationController } from '../controllers/application.controller';
-import { ApplicationService } from '../services/application.service';
-import { ApplicationRepository } from '../repositories/application.repository';
-import { uploadDocument } from '../config/multer';
-import { prisma } from '../config/prisma';
-import { createApplicationSchema } from '../utils/validation';
-import { authMiddleware } from '../middlewares/auth.middleware';
-import { checkRoleMiddleware } from '../middlewares/checkRole.middleware';
-import { AIService } from '../services/ai.service';
-import { geminiClient } from '../config/genAi';
+import { ApplicationController } from '../controllers/application.controller.js';
+import { ApplicationService } from '../services/application.service.js';
+import { ApplicationRepository } from '../repositories/application.repository.js';
+import { uploadDocument } from '../config/multer.js';
+import { prisma } from '../config/prisma.js';
+import { createApplicationSchema } from '../utils/validation.js';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { checkRoleMiddleware } from '../middlewares/checkRole.middleware.js';
+import { AIService } from '../services/ai.service.js';
+import { geminiClient } from '../config/genAi.js';
 
 const applicationRouter = Router();
 

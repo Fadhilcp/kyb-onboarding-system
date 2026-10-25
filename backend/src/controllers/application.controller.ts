@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import { ApplicationStatus } from '@prisma/client';
-import { IApplicationService } from '../services/interfaces/IApplicationService';
-import { CreateApplicationDTO } from '../dtos/application.dto';
-import { CreateApplicationInput } from '../utils/validation';
-import { toApplicationTableDTOs } from '../mappers/application.mapper';
-import { sendResponse } from '../utils/response';
-import { AppError } from '../utils/appError';
+import { IApplicationService } from '../services/interfaces/IApplicationService.js';
+import { CreateApplicationDTO } from '../dtos/application.dto.js';
+import { CreateApplicationInput } from '../utils/validation.js';
+import { toApplicationTableDTOs } from '../mappers/application.mapper.js';
+import { sendResponse } from '../utils/response.js';
+import { AppError } from '../utils/appError.js';
 
 export class ApplicationController {
   constructor(

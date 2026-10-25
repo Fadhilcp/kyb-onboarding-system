@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { IAuthService } from '../services/interfaces/IAuthService';
+import { IAuthService } from '../services/interfaces/IAuthService.js';
 import { ZodType } from 'zod';
-import { LoginDTO } from '../dtos/auth.dto';
-import { setRefreshTokenCookie, clearRefreshTokenCookie } from '../utils/cookieUtils';
-import { sendResponse } from '../utils/response';
-import { AppError } from '../utils/appError';
+import { LoginDTO } from '../dtos/auth.dto.js';
+import { setRefreshTokenCookie, clearRefreshTokenCookie } from '../utils/cookieUtils.js';
+import { sendResponse } from '../utils/response.js';
+import { AppError } from '../utils/appError.js';
 
 export class AuthController {
   constructor(

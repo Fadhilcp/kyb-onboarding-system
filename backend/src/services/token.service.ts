@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
-import { ITokenService } from './interfaces/ITokenService';
+import { ITokenService } from './interfaces/ITokenService.js';
 
 
 
