@@ -41,24 +41,11 @@ Below are actual prompt instructions provided to the AI assistant throughout the
   TypeError: Cannot read properties of undefined (reading '_applicationService')
   ```
 - **How It Was Identified**: Triggered when testing the Reviewer Dashboard query `GET /api/applications?status=`.
-- **The Fix**: Manually converted all controller methods into class arrow function properties (e.g. `getApplications = async (req, res, next) => { ... }`) and bound them in route definitions (`applicationController.getApplications.bind(applicationController)`), ensuring lexical binding of `this`.
+- **The Fix**: Kept the standard class methods but manually bound the controller instance directly within the Express route definitions (e.g., `applicationRouter.get('/', applicationController.getApplications.bind(applicationController))`). This successfully preserved the correct `this` context when Express executed the callbacks, without needing to rewrite the controller methods as arrow functions.
 
 ---
 
-### Case 2: TypeScript ESM vs. CommonJS Module Resolution (`TS1479`)
-- **The Issue**: The `@google/genai` SDK is published as an ES module (`"type": "module"`). In the initial CommonJS configuration, TypeScript flagged:
-  ```text
-  error TS1479: The current file is a CommonJS module whose imports will produce 'require' calls; however, the referenced file is an ECMAScript module.
-  ```
-- **How It Was Identified**: Failed execution of `npm run build` during backend production compile checks.
-- **The Fix**: Rather than suppressing the issue with hacks, we upgraded the backend to native Node16 ESM:
-  1. Updated `package.json` to `"type": "module"`.
-  2. Set `"module": "Node16"` and `"moduleResolution": "Node16"` in `tsconfig.json`.
-  3. Added explicit `.js` extensions across all internal relative imports across routes, services, repositories, and controllers.
-
----
-
-### Case 3: Blocking Synchronous AI Review During Application Submission
+### Case 2: Blocking Synchronous AI Review During Application Submission
 - **The Issue**: The initial implementation executed the Gemini AI document verification inline during the `POST /api/applications` submission endpoint. Because document upload to Cloudinary plus Gemini multimodal processing can take 4–10 seconds, the client request hung with a long loading spinner, degrading user experience.
 - **How It Was Identified**: Code review of `ApplicationService.submitApplication` revealed latency bottlenecks and potential timeout risks on cloud serverless deployments.
 - **The Fix**: Decoupled the submission flow:
@@ -68,10 +55,10 @@ Below are actual prompt instructions provided to the AI assistant throughout the
 
 ---
 
-### Case 4: Heavy Payload in Applications Table Listing
-- **The Issue**: The initial table API query returned the full database entity, including detailed verification findings and document links for dozens of applications at once.
-- **How It Was Identified**: Reviewing network payloads on the Reviewer Dashboard.
-- **The Fix**: Implemented a dedicated Data Transfer Object (DTO) mapper (`toApplicationTableDTOs` in `backend/src/mappers/application.mapper.ts`) to only send summary fields needed for the table view (ID, applicant name, business name, status, risk score, date), deferring detailed document and AI findings inspection to on-demand `/api/applications/:id` modal requests.
+### Case 3: Heavy Payload in Applications Table Listing
+- **The Issue**: The initial table API returned the full application entities, including detailed verification findings and document links for every application. As the number of applications increased, the table had to load and process more data than it needed to display.
+- **How It Was Identified**: By observing the Reviewer Dashboard while loading and viewing multiple applications, I noticed that the table fetched unnecessary detailed information for each application. This indicated an opportunity to reduce the API response payload.
+- **The Fix**: Implemented a dedicated Data Transfer Object (DTO) mapper (`toApplicationTableDTOs` in `backend/src/mappers/application.mapper.ts`) to return only the summary fields required by the table, such as application ID, applicant name, business name, status, risk score, and date. Detailed document links and AI review findings are fetched on demand through `/api/applications/:id` when a reviewer opens an application.
 
 ---
 

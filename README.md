@@ -39,11 +39,11 @@ The platform automates the verification of corporate registration documents, cal
 | Layer | Technologies |
 | :--- | :--- |
 | **Frontend** | React 19, TypeScript, Tailwind CSS v4, Vite, Redux Toolkit, Axios, React Router v7 |
-| **Backend** | Node.js (Node16 Native ESM), Express 5, TypeScript, Prisma ORM |
+| **Backend** | Node.js (Node.js 16+ Native ESM), Express 5, TypeScript, Prisma ORM |
 | **Database** | PostgreSQL |
 | **AI / Multimodal** | Google Gemini API (`@google/genai`) |
 | **Media Storage** | Cloudinary & Multer |
-| **Deployment** | Vercel (Frontend SPA with `vercel.json` rewrites) |
+| **Deployment** | Vercel (Frontend SPA), Render (Backend API & PostgreSQL Database) |
 
 ---
 
@@ -190,12 +190,13 @@ kyb-onboarding-system/
 | `POST` | `/api/auth/logout` | Revoke session and clear refresh cookie | Authenticated |
 
 ### Applications (`/api/applications`)
+
 | Method | Endpoint | Description | Access |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/applications` | Submit KYB registration data and document | Public |
 | `GET` | `/api/applications` | List applications with optional `?status=` filter | Reviewer |
-| `GET` | `/api/applications/:id` | Fetch full application details & AI findings | Reviewer |
-| `PATCH` | `/api/applications/:id/decision` | Approve or reject application (`{ status }`) | Reviewer |
+| `GET` | `/api/applications/:applicationId` | Fetch full application details & AI findings | Reviewer |
+| `PATCH` | `/api/applications/:applicationId/decision` | Approve or reject application (`{ status }`) | Reviewer |
 
 ---
 
