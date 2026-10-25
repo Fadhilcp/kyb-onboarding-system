@@ -48,39 +48,37 @@ export class ApplicationService implements IApplicationService {
       status: ApplicationStatus.SUBMITTED,
     });
 
+    this.processAiReviewInBackground(createdApplication.id, applicationDto, documentUrl);
+
+    return createdApplication;
+  }
+
+  private async processAiReviewInBackground(
+    applicationId: string, applicationDto: CreateApplicationDTO,
+    documentUrl: string): Promise<void> {
     try {
-      const aiAnalysisResult = await this._aiService.analyzeApplication(
-        applicationDto,
-        documentUrl
-      );
+      const aiAnalysisResult = await this._aiService.analyzeApplication(applicationDto, documentUrl);
 
       if (aiAnalysisResult.error) {
         throw new Error(aiAnalysisResult.error);
       }
 
-      const updatedApplication = await this._applicationRepository.updateStatus(
-        createdApplication.id,
+      await this._applicationRepository.updateStatus(
+        applicationId,
         ApplicationStatus.AI_REVIEWED,
         aiAnalysisResult
       );
-
-      return updatedApplication ?? createdApplication;
     } catch (err: any) {
-      console.error(
-        `AI verification failed for application ${createdApplication.id}:`,
-        err
-      );
-
-      const failedApplication = await this._applicationRepository.updateStatus(
-        createdApplication.id,
+      console.error(`Background AI verification failed for application ${applicationId}:`, err);
+      
+      await this._applicationRepository.updateStatus(
+        applicationId,
         ApplicationStatus.AI_REVIEW_FAILED,
         {
           error: err?.message || 'AI verification failed',
           reviewedAt: new Date().toISOString(),
         }
       );
-
-      return failedApplication ?? createdApplication;
     }
   }
 

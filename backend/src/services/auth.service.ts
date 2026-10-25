@@ -14,7 +14,7 @@ export class AuthService implements IAuthService {
   async login(credentials: LoginDTO): Promise<AuthResponseDTO> {
     const user = await this._userRepository.findByEmail(credentials.email);
     if (!user) {
-      const error: any = new Error('User not found.');
+      const error: any = new Error('Admin not found.');
       error.status = 401;
       throw error;
     }

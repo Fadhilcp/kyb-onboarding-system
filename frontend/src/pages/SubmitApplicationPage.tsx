@@ -23,7 +23,7 @@ export const SubmitApplicationPage: React.FC = () => {
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<ApplicationFormData>(INITIAL_FORM_DATA);
   const [file, setFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'success' | 'under_review'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   const handleReset = () => {
@@ -45,7 +45,7 @@ export const SubmitApplicationPage: React.FC = () => {
 
     try {
       await applicationService.submit(payload);
-      setStatus('success');
+      setStatus('under_review');
     } catch (err: any) {
       const serverMessage = err?.response?.data?.error || err?.message || 'Submission failed. Please check your network and try again.';
       setErrorMsg(serverMessage);
@@ -53,7 +53,7 @@ export const SubmitApplicationPage: React.FC = () => {
     }
   };
 
-  return (
+return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
       {/* Top Header */}
       <div className="max-w-xl mx-auto w-full mb-8 text-center">
@@ -96,6 +96,40 @@ export const SubmitApplicationPage: React.FC = () => {
             className="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Submit Another Application
+          </button>
+        </div>
+      ) : status === 'under_review' ? (
+        <div className="max-w-xl mx-auto w-full rounded-2xl border border-gray-200 bg-white p-6 sm:p-10 text-center shadow-sm space-y-6">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <svg className="h-8 w-8 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Application Under Review</h2>
+            <p className="text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
+              Your KYB application for <strong className="text-gray-900">{formData.businessName}</strong> has been received successfully. 
+              Our automated AI system is currently verifying your documents.
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-blue-50/50 p-5 border border-blue-100 text-left text-sm text-blue-800 space-y-3">
+            <p className="font-semibold flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+              What happens next?
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-blue-700/80 text-xs">
+              <li>AI verification usually takes about 1-2 minutes.</li>
+              <li>A human compliance officer will review the final results.</li>
+            </ul>
+          </div>
+
+          <button
+            onClick={handleReset}
+            className="w-full mt-4 inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Return to Start
           </button>
         </div>
       ) : (

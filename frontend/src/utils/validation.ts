@@ -53,6 +53,7 @@ export const validateBusinessField = (
     case 'ownerName':
       if (!trimmed) return 'Primary owner / authorized representative name is required';
       if (trimmed.length < 2) return 'Owner name must be at least 2 characters';
+      if (/\d/.test(trimmed)) return 'Owner name cannot contain numbers';
       return null;
 
     case 'contactEmail':

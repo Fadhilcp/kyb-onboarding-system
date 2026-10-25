@@ -53,7 +53,6 @@ instance.interceptors.response.use((response) => response,
             return instance(originalRequest);
         } catch (error) {
             tokenStore.clear();
-            console.error('Session expired. Please log in again.');
             return Promise.reject(error)
         }
     }

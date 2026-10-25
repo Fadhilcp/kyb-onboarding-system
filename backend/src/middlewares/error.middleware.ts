@@ -9,8 +9,6 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  console.error(`[Global Error] ${req.method} ${req.originalUrl}:`, err);
-
   // Zod validation erros
   if (err instanceof ZodError) {
     const details = err.issues.map((issue) => ({
